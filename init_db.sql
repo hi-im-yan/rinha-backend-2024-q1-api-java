@@ -2,7 +2,7 @@ CREATE TABLE clientes (
 	id SERIAL PRIMARY KEY,
 	nome VARCHAR(50) NOT NULL,
 	limite INTEGER NOT NULL,
-	valor INTEGER DEFAULT 0
+	saldo INTEGER DEFAULT 0
 );
 
 CREATE TABLE transacoes (
