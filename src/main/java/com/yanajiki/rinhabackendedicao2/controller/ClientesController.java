@@ -1,6 +1,7 @@
 package com.yanajiki.rinhabackendedicao2.controller;
 
 import com.yanajiki.rinhabackendedicao2.controller.form.TransacaoForm;
+import com.yanajiki.rinhabackendedicao2.controller.response.Extrato;
 import com.yanajiki.rinhabackendedicao2.controller.response.ResultadoTransacao;
 import com.yanajiki.rinhabackendedicao2.exception.ClienteNaoEncontradoException;
 import com.yanajiki.rinhabackendedicao2.exception.TransacaoNaoProcessavelException;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +45,14 @@ public class ClientesController {
         this.clienteRepository.save(cliente);
 
         return ResponseEntity.status(200).body(new ResultadoTransacao(cliente));
+    }
+
+    @GetMapping("/{id}/extrato")
+    public ResponseEntity<Extrato> geraExtrato(@PathVariable("id") Long id) {
+        Cliente cliente = this.clienteRepository.findById(id).orElseThrow(ClienteNaoEncontradoException::new);
+
+        Extrato extrato = new Extrato(cliente);
+        return ResponseEntity.status(200).body(extrato);
     }
 
     @ExceptionHandler

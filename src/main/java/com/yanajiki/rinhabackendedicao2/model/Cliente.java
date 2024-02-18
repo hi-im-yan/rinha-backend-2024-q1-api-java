@@ -6,10 +6,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "clientes")
@@ -31,6 +34,9 @@ public class Cliente {
     @Column
     private int saldo;
 
+    @OneToMany(mappedBy = "cliente")
+    private List<Transacao> transacoes;
+
     private static final Character DEBITO = 'd';
     private static final Character CREDITO = 'c';
 
@@ -47,6 +53,10 @@ public class Cliente {
 
         this.saldo -= transacao.getValor();
         transacao.setCliente(this);
+    }
+
+    public List<Transacao> buscasUltimasTransacoes(final int tamanhoHistorico) {
+        return this.transacoes.subList(Math.max(this.transacoes.size() - tamanhoHistorico, 0), this.transacoes.size());
     }
 
     private boolean transacaoDebitoProcessavel(final Integer valorTransacao) {

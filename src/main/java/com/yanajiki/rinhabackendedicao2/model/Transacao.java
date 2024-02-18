@@ -9,11 +9,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transacoes")
 @Getter
+@Setter
+@NoArgsConstructor
 public class Transacao {
 
     @Id
@@ -21,15 +26,16 @@ public class Transacao {
     private Long id;
 
     @Column(nullable = false)
-    private final Integer valor;
+    private Integer valor;
 
     @Column(nullable = false)
-    private final Character tipo;
+    private Character tipo;
 
     @Column(nullable = false, length = 10)
-    private final String descricao;
+    private String descricao;
 
-    //realizada_em é controlada pelo banco de dados
+    @Column(name = "realizada_em", insertable = false, updatable = false)
+    private LocalDateTime realizadaEm;
 
     @ManyToOne
     @Setter
