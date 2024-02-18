@@ -8,15 +8,21 @@ import com.yanajiki.rinhabackendedicao2.model.Cliente;
 import com.yanajiki.rinhabackendedicao2.model.ClienteJpaRepository;
 import com.yanajiki.rinhabackendedicao2.model.Transacao;
 import com.yanajiki.rinhabackendedicao2.model.TransacaoJpaRepository;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/clientes")
@@ -27,7 +33,7 @@ public class ClientesController {
     private final TransacaoJpaRepository transacaoRepository;
 
     @PostMapping("/{id}/transacoes")
-    public ResponseEntity<ResultadoTransacao> registraTransacao(@PathVariable("id") Long id, @RequestBody TransacaoForm transacaoForm) {
+    public ResponseEntity<ResultadoTransacao> registraTransacao(@PathVariable("id") Long id, @RequestBody @Valid TransacaoForm transacaoForm) {
         Cliente cliente = this.clienteRepository.findById(id).orElseThrow(ClienteNaoEncontradoException::new);
 
         Transacao transacao = new Transacao(transacaoForm);
@@ -47,5 +53,15 @@ public class ClientesController {
     @ExceptionHandler
     public ResponseEntity<Void> TransacaoNoaProcessavelHandler(TransacaoNaoProcessavelException ex) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException ex) {
+        BindingResult bindingResult = ex.getBindingResult();
+        List<String> errorMessages = bindingResult.getAllErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(errorMessages, HttpStatus.BAD_REQUEST);
     }
 }
