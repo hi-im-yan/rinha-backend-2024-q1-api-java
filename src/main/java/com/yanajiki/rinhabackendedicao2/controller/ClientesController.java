@@ -72,6 +72,6 @@ public class ClientesController {
                 .map(error -> error.getDefaultMessage())
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(errorMessages, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorMessages, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }
